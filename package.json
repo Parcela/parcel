@@ -1,0 +1,68 @@
+{
+	"name": "Parcela-Parcel",
+	"version": "0.1.0",
+	"description": "Parcela's Parcel base class",
+	"author": {
+		"name": "Daniel Barreiro",
+		"email": "devasatyam@gmail.com"
+	},
+	"licenses": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Parcela/parcel"
+	},
+	"bugs": {
+		"url": "https://github.com/Parcela/parcel/issues"
+	},
+	"keywords": [
+		"Parcela",
+		"parcel"
+	],
+	"main": "parcel.js",
+	"dependencies": {
+		"lang-ext": "Parcela/lang-ext"
+	},
+	"devDependencies": {
+		"chai": "^1.9.1",
+		"istanbul": "^0.3.0",
+		"jshint": "^2.5.5",
+		"mocha": "^1.21.4",
+		"virtual-dom":"Parcela/virtual-dom"
+	},
+	"engines": {
+		"node": "*"
+	},
+
+	"scripts": {
+		"pretest": "jshint ./parcel.js",
+		"test": "mocha tests/*.js  && istanbul cover $(which _mocha) -- tests/*.js",
+		"lint": "jshint ./parcel.js"
+	},
+	"testling": {
+		"harness": "mocha",
+		"files": "tests/*.js",
+		"browsers": [
+			"ie/6..latest",
+			"chrome/22..latest",
+			"firefox/16..latest",
+			"safari/latest",
+			"opera/11.0..latest",
+			"iphone/6",
+			"ipad/6",
+			"android-browser/latest"
+		]
+	},
+
+	"homepage": "http://Parcela.github.io",
+	"maintainers": [
+		{
+			"name": "Daniel Barreiro",
+			"email": "devasatyam@gmail.com"
+    	},
+		{
+			"name": "Marco Asbreuk",
+			"email": "marco@itsasbreuk.nl"
+    	}
+  	]
+
+}

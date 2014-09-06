@@ -3,7 +3,7 @@
 @module core
 @submodule parcel
 */
-require('core-lang-ext');
+require('lang-ext');
 /**
 All Parcela apps should inherit from this class.
 

@@ -4,16 +4,14 @@ var expect = require('chai').expect,
 	should = require('chai').should();
 require('lang-ext');
 (function (window) {
-	var v = require('virtual-dom')(window).vDOM,
+	var v = require('virtual-dom')(window),
 		Parcel = require("../parcel");
 
 	var P1 = Parcel.subClass({
 		init: function (config) {
-			console.log('init', config);
 			this.counter = config.start || 0;
 		},
 		view: function () {
-			console.log('view');
 			return v.vNode('div.parcel',[
 				v.vNode('p',this.counter),
 				v.vNode('br')
@@ -117,8 +115,36 @@ require('lang-ext');
 				var p = new P({c:3},'hello');
 
 			});
+			
 		});
+		describe('on destruction', function () {
+			it('should be called when swapping root parcels', function (done) {
+				var P1 = Parcel.subClass({
+					destroy: function () {
+						done();
+					}
+				});
+				v.rootApp(P1);
+				v.rootApp(Parcel);
+			});
+			it('should be chained', function (done) {
+				var P2 = Parcel.subClass({
+					destroy: function () {
+						done();
+					}
+				});
+				var P1 = Parcel.subClass({
+					init: function () {
+						this.p2 = new P2();
+					}
+				});
+				v.rootApp(P1);
+				v.rootApp(Parcel);
+			});
+		});
+						
+					
 	});
 
-})(global.window || require('fake-dom'));
+})(global.window || require('fake-dom')());
 

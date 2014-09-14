@@ -29,7 +29,7 @@ var Parcel = Object.createClass(function (config) {
 	/**
 	Provides the initialization of the parcel, called by the constructor of the parcel with all its arguments.
 
-	Can be overriden by each Parcela app.
+	The provided method is empty, it can be overriden by each Parcela app.
 
 	Set up event listeners, initialize variables and models and prepare for operation.
 	@method init
@@ -38,12 +38,41 @@ var Parcel = Object.createClass(function (config) {
 
 
 	/**
-	Called by the page manager before unloading the parcel, for example, when switching pages.
+	Destructor.  
 
-	@method unload
-	@return {Boolean}  If it returns exactly `false`, page switching will be prevented.
+	The provided method checks all the instance properties and if any of them are 
+	instances of Parcel, it will call the `destroy` method on each of the child parcels.
+
+	@method destroy
 	*/
-	unload: function () {},
+	destroy: function () {
+		this.each(function (member) {
+			if (member instanceof Parcel) member.destroy.call(this);
+		}, this);
+	},
+
+	/**
+	Called by the renderer before this Parcel is shown for the first time.
+	It is a good place to activate resources that are only usefull while the 
+	parcel is visible such as animations.
+	
+	The provided method is empty, it can be overriden by each Parcela app.
+	
+	@method preView
+	*/
+	preView: function () {},
+	
+	/**
+	Called by the renderer after this Parcel is hidden.
+	
+	It is a good place to deactivate resources that are only usefull while the 
+	parcel is visible such as animations.
+	
+	The provided method is empty, it can be overriden by each Parcela app.
+	
+	@method postView
+	*/
+	postView: function () {},
 
 
 	/**
@@ -82,7 +111,7 @@ var Parcel = Object.createClass(function (config) {
 	@return {vNode} The expected virtual DOM for this parcel.
 	*/
 	view: function () {
-		return {};
+		return '';
 	},
 
 	/**

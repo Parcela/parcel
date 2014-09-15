@@ -23,7 +23,7 @@
 */
 
 // Include Function.mergePrototypes:
-require('core-lang-ext');
+require('lang-ext');
 
 var NAME = '[parcel-events]: ',
     EventEmitter = require('event/event-emitter.js'),

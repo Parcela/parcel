@@ -141,6 +141,43 @@ require('lang-ext');
 				v.rootApp(P1);
 				v.rootApp(Parcel);
 			});
+			it('should handle arrays of sub-parcels', function () {
+				var count = 0;
+				var P2 = Parcel.subClass({
+					destroy: function () {
+						count++;
+					}
+				});
+				var P1 = Parcel.subClass({
+					
+					init: function () {
+						this.subP = [];
+						for (var i = 0; i < 5; i++)  {
+							this.subP[i] = new P2();
+						}
+					}
+				});
+				v.rootApp(P1);
+				v.rootApp(Parcel);
+				expect(count).eql(5);
+					
+			});
+			it('should run in its own context', function (done) {
+				var P2 = Parcel.subClass({
+					a: 4,
+					destroy: function () {
+						expect(this.a).eql(4);
+						done();
+					}
+				});
+				var P1 = Parcel.subClass({
+					init: function () {
+						this.p2 = new P2();
+					}
+				});
+				v.rootApp(P1);
+				v.rootApp(Parcel);
+			});
 		});
 						
 					

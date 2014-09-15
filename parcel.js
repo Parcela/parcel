@@ -41,13 +41,28 @@ var Parcel = Object.createClass(function (config) {
 	Destructor.  
 
 	The provided method checks all the instance properties and if any of them are 
-	instances of Parcel, it will call the `destroy` method on each of the child parcels.
+	instances of Parcel or arrays of Parcel instances, 
+	it will call the `destroy` method on each of the child parcels.
 
 	@method destroy
 	*/
 	destroy: function () {
 		this.each(function (member) {
-			if (member instanceof Parcel) member.destroy.call(this);
+			if (member instanceof Parcel) member.destroy.call(member);
+			if (typeof member == 'object' && member.length) {
+				member.some(function (item) {
+					if (item) {
+						if (item instanceof Parcel) {
+							item.destroy.call(item);
+						} else {
+							// If the first non-emtpy item is not a Parcel instance, 
+							// it doesn't bother checking the rest.
+							return true;
+						}
+					}
+				});
+			}
+						
 		}, this);
 	},
 

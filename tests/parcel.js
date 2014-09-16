@@ -183,5 +183,5 @@ require('lang-ext');
 					
 	});
 
-})(global.window || require('fake-dom')());
+})(global.window || require('fake-dom'));
 

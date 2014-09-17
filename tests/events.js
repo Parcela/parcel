@@ -10,8 +10,10 @@
         Parcel = require('../parcel'),
         vdom = require('virtual-dom')(window),
         ParcelEvents = require('../events.js')(window),
+		
+		document = window.document,
 
-        vdom, EMIT_CLICK_EVENT, EMIT_FOCUS_EVENT, EMIT_KEY_EVENT, buttonnode, divnode, parcelnode;
+        EMIT_CLICK_EVENT, EMIT_FOCUS_EVENT, EMIT_KEY_EVENT, buttonnode, divnode, parcelnode;
 
     ParcelEvents.mergeInto(Parcel);
 
@@ -153,8 +155,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     });
                 }
             });
-            var menu = new Menu();
-            vdom.rootApp(menu, parcelnode);
+            vdom.rootApp(Menu, parcelnode);
             Event.emit('red:save');
         });
 
@@ -168,8 +169,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     done();
                 }
             });
-            var menu = new Menu();
-            vdom.rootApp(menu, parcelnode);
+            vdom.rootApp(Menu, parcelnode);
             Event.emit('red:save');
         });
 
@@ -301,14 +301,13 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
+            var menu = vdom.rootApp(Menu, parcelnode, {
                 items:[
                     {label: 'Home'},
                     {label: 'Users'},
                     {label: 'Groups'}
                 ]
             });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -331,14 +330,13 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
+            var menu = vdom.rootApp(Menu, parcelnode, {
                 items:[
                     {label: 'Home'},
                     {label: 'Users'},
                     {label: 'Groups'}
                 ]
             });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -365,14 +363,13 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
+            var menu = vdom.rootApp(Menu, parcelnode, {
                 items:[
                     {label: 'Home'},
                     {label: 'Users'},
                     {label: 'Groups'}
                 ]
             });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -400,14 +397,13 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
+            var menu = vdom.rootApp(Menu, parcelnode, {
                 items:[
                     {label: 'Home'},
                     {label: 'Users'},
                     {label: 'Groups'}
                 ]
             });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -431,14 +427,13 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
+            var menu = vdom.rootApp(Menu, parcelnode, {
                 items:[
                     {label: 'Home'},
                     {label: 'Users'},
                     {label: 'Groups'}
                 ]
             });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -462,14 +457,6 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
-                items:[
-                    {label: 'Home'},
-                    {label: 'Users'},
-                    {label: 'Groups'}
-                ]
-            });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -497,14 +484,13 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
+            var menu = vdom.rootApp(Menu, parcelnode, {
                 items:[
                     {label: 'Home'},
                     {label: 'Users'},
                     {label: 'Groups'}
                 ]
             });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -533,14 +519,13 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
+            var menu = vdom.rootApp(Menu, parcelnode, {
                 items:[
                     {label: 'Home'},
                     {label: 'Users'},
                     {label: 'Groups'}
                 ]
             });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -594,14 +579,13 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
+            var menu = vdom.rootApp(Menu, parcelnode, {
                 items:[
                     {label: 'Home'},
                     {label: 'Users'},
                     {label: 'Groups'}
                 ]
             });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -655,14 +639,13 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     }));
                 }
             });
-            var menu = new Menu({
+            var menu = vdom.rootApp(Menu, parcelnode, {
                 items:[
                     {label: 'Home'},
                     {label: 'Users'},
                     {label: 'Groups'}
                 ]
             });
-            vdom.rootApp(menu, parcelnode);
             ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
@@ -1128,8 +1111,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -1187,8 +1169,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -1244,8 +1225,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -1299,8 +1279,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -1383,8 +1362,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -1466,8 +1444,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -1549,8 +1526,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -1630,8 +1606,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];

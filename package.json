@@ -19,15 +19,15 @@
     ],
     "main": "parcel.js",
     "dependencies": {
-        "lang-ext": "git://github.com/Parcela/lang-ext.git#v0.0.7"
+        "lang-ext": "Parcela/lang-ext"
     },
     "devDependencies": {
         "chai": "^1.9.1",
         "istanbul": "^0.3.0",
         "jshint": "^2.5.5",
         "mocha": "^1.21.4",
-        "virtual-dom": "git://github.com/Parcela/virtual-dom.git#v0.0.7",
-        "fake-dom": "git://github.com/Parcela/fake-dom.git#v0.0.7"
+        "virtual-dom": "Parcela/virtual-dom",
+        "fake-dom": "Parcela/fake-dom"
     },
     "engines": {
         "node": "*"

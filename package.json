@@ -19,7 +19,9 @@
     ],
     "main": "parcel.js",
     "dependencies": {
-        "lang-ext": "Parcela/lang-ext"
+        "lang-ext": "Parcela/lang-ext",
+        "event": "Parcela/event",
+        "event-dom": "Parcela/event-dom"
     },
     "devDependencies": {
         "chai": "^1.9.1",

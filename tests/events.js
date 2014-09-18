@@ -10,7 +10,7 @@
         Parcel = require('../parcel'),
         vdom = require('virtual-dom')(window),
         ParcelEvents = require('../events.js')(window),
-		
+
 		document = window.document,
 
         EMIT_CLICK_EVENT, EMIT_FOCUS_EVENT, EMIT_KEY_EVENT, buttonnode, divnode, parcelnode;
@@ -20,49 +20,6 @@
     // ITSA.render = vdom.render;
     // ITSA.rootApp = vdom.rootApp;
     Parcel.vNode = vdom.vNode;
-
-/*
-//===========================================================
-var getPNodeOrVnodeInfo = function(parcel, domnode) {
-    var pNode = parcel._pNode,
-        parcelTree = [pNode],
-        vNode, returnObject,
-        getChildPVnode = function(children) {
-            var found;
-            children.some(
-                function(child) {
-                    var vChildren,
-                        ispNode;
-                    // only pNodes and vNodes can have a DOMnode bounded
-                    if (typeof child === 'object') {
-                        ispNode = (typeof ((child.parcel && child.parcel.view) || child.view) === 'function');
-                        if (child.node===domnode) {
-                            // the vNode's node matches the searched domnode
-                            found = child;
-                        }
-                        else {
-                            // inspect its children
-                            vChildren = child.children;
-                            Array.isArray(vChildren) || (vChildren=[vChildren]);
-                            ispNode && parcelTree.push(child.parcel);
-                            found = getChildPVnode(vChildren);
-                            found || (ispNode && parcelTree.splice(parcelTree.length-1, 1));
-                        }
-                        return found;
-                    }
-                }
-            );
-            return found;
-        };
-
-    if (pNode && pNode.children) {
-        vNode = getChildPVnode(pNode.children);
-        returnObject = vNode ? {vNode: vNode, parcelTree: parcelTree} : undefined;
-    }
-    return returnObject;
-};
-//===========================================================
-*/
 
     EMIT_CLICK_EVENT = function(target) {
         if (!window) {
@@ -178,7 +135,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             var parcel = new Menu({value: 10});
             parcel.defineEmitter('parcel1');
             Event.after('parcel1:save', function(e) {
-                e.target.value.should.be.eql(10);
+                expect(e.target.value).to.eql(10);
             }, Event);
             parcel.emit('save');
         });
@@ -192,16 +149,16 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             parcel1.defineEmitter('parcel1');
             parcel2.defineEmitter('parcel2');
             Event.after('parcel1:save', function(e) {
-                e.target.value.should.be.eql(10);
+                expect(e.target.value).to.eql(10);
                 count += 1;
             });
             Event.after('parcel2:save', function(e) {
-                e.target.value.should.be.eql(20);
+                expect(e.target.value).to.eql(20);
                 count += 2;
             });
             parcel1.emit('save');
             parcel2.emit('save');
-            count.should.be.eql(3);
+            expect(count).to.eql(3);
         });
 
         it('set Class-emitter', function () {
@@ -209,7 +166,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             var parcel = new Menu({value: 10});
             Menu.mergePrototypes(Event.Emitter('parcel1'));
             Event.after('parcel1:save', function(e) {
-                e.target.value.should.be.eql(10);
+                expect(e.target.value).to.eql(10);
             });
             parcel.emit('save');
         });
@@ -223,11 +180,11 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             Menu.mergePrototypes(Event.Emitter('parcel1'));
             Event.after('parcel1:save', function(e) {
                 count += 1;
-                e.target.value.should.be.eql(10*count);
+                expect(e.target.value).to.eql(10*count);
             });
             parcel1.emit('save');
             parcel2.emit('save');
-            count.should.be.eql(2);
+            expect(count).to.eql(2);
         });
 
         it('set Class-emitter multiple Parcels and overrule on instance', function () {
@@ -239,16 +196,16 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             Menu.mergePrototypes(Event.Emitter('parcel1'));
             parcel2.defineEmitter('parcel2');
             Event.after('parcel1:save', function(e) {
-                e.target.value.should.be.eql(10);
+                expect(e.target.value).to.eql(10);
                 count += 1;
             });
             Event.after('parcel2:save', function(e) {
-                e.target.value.should.be.eql(20);
+                expect(e.target.value).to.eql(20);
                 count += 2;
             });
             parcel1.emit('save');
             parcel2.emit('save');
-            count.should.be.eql(3);
+            expect(count).to.eql(3);
         });
 
     });
@@ -322,73 +279,6 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     this.after('click', function() {
                         done();
                     });
-                },
-                view: function() {
-                    var v = Parcel.vNode;
-                    return v('ul',this.items.map(function(item) {
-                        return v('li', [v('button', item.label)]);
-                    }));
-                }
-            });
-            var menu = vdom.rootApp(Menu, parcelnode, {
-                items:[
-                    {label: 'Home'},
-                    {label: 'Users'},
-                    {label: 'Groups'}
-                ]
-            });
-            ul = menu._pNode.children[0];
-            firstli = ul.children[0];
-            buttonVnode = firstli.children[0];
-            buttonNode = buttonVnode.node;
-            EMIT_CLICK_EVENT(buttonNode);
-        });
-
-        it('existance e.vNode', function (done) {
-            var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
-                init: function() {
-                    this.after('click', function(e) {
-// var pvNodeInfo = getPNodeOrVnodeInfo(this, e.target);
-// e.vNode = pvNodeInfo.vNode;
-                        (e.vNode===buttonVnode).should.be.true;
-                        done();
-                    },
-                    'button');
-                },
-                view: function() {
-                    var v = Parcel.vNode;
-                    return v('ul',this.items.map(function(item) {
-                        return v('li', [v('button', item.label)]);
-                    }));
-                }
-            });
-            var menu = vdom.rootApp(Menu, parcelnode, {
-                items:[
-                    {label: 'Home'},
-                    {label: 'Users'},
-                    {label: 'Groups'}
-                ]
-            });
-            ul = menu._pNode.children[0];
-            firstli = ul.children[0];
-            buttonVnode = firstli.children[0];
-            buttonNode = buttonVnode.node;
-            EMIT_CLICK_EVENT(buttonNode);
-        });
-
-        it('existance e.parcelTree', function (done) {
-            var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
-                init: function() {
-                    this.after('click', function(e) {
-// var pvNodeInfo = getPNodeOrVnodeInfo(this, e.target);
-// e.parcelTree = pvNodeInfo.parcelTree;
-                        (e.parcelTree===undefined).should.be.false;
-                        (e.parcelTree[0]===this._pNode).should.be.true;
-                        done();
-                    },
-                    'button');
                 },
                 view: function() {
                     var v = Parcel.vNode;
@@ -496,7 +386,9 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
-            setTimeout(done, 0);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
+            setTimeout(done, 50);
         });
 
         it('halt event', function (done) {
@@ -531,7 +423,9 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
-            setTimeout(done, 0);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
+            setTimeout(done, 50);
         });
 
         it('stopPropagation', function (done) {
@@ -546,28 +440,28 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     },
                     'ul');
                     this.before('click', function(e) {
-                        count.should.be.eql(1);
+                        expect(count).to.eql(1);
                         count += 2;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(3);
+                        expect(count).to.eql(3);
                         e.stopPropagation();
                         count += 4;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(7);
+                        expect(count).to.eql(7);
                         count += 8;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(0);
+                        expect(count).to.eql(0);
                         count += 1;
                     },
                     'button');
                     this.after('click', function() {
-                        count.should.be.eql(15);
+                        expect(count).to.eql(15);
                         done();
                     },
                     'button');
@@ -607,12 +501,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     },
                     'ul');
                     this.before('click', function(e) {
-                        count.should.be.eql(1);
+                        expect(count).to.eql(1);
                         count += 2;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(3);
+                        expect(count).to.eql(3);
                         e.stopImmediatePropagation();
                         count += 4;
                     },
@@ -622,12 +516,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(0);
+                        expect(count).to.eql(0);
                         count += 1;
                     },
                     'button');
                     this.after('click', function() {
-                        count.should.be.eql(7);
+                        expect(count).to.eql(7);
                         done();
                     },
                     'button');
@@ -723,8 +617,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -732,10 +625,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(1);
+                expect(count).to.eql(1);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('event-subscription on parcel', function (done) {
@@ -773,8 +668,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -782,10 +676,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(1);
+                expect(count).to.eql(1);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('event-subscription on parcel and parcelnode', function (done) {
@@ -793,11 +689,11 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             var Menu = Parcel.subClass({
                 init: function() {
                     this.after('click', function() {
-                        count.should.be.eql(1);
+                        expect(count).to.eql(1);
                         count+=2;
                     });
                     this.after('click', function() {
-                        count.should.be.eql(0);
+                        expect(count).to.eql(0);
                         count+=1;
                     }, 'button');
                 },
@@ -828,8 +724,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -837,10 +732,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(3);
+                expect(count).to.eql(3);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('right context when subscribed on parcel', function (done) {
@@ -848,7 +745,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             var Menu = Parcel.subClass({
                 init: function() {
                     this.after('click', function() {
-                        this.identifier.should.be.eql(1);
+                        expect(this.identifier).to.eql(1);
                         count++;
                     });
                 },
@@ -881,8 +778,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -890,10 +786,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(1);
+                expect(count).to.eql(1);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('right context', function (done) {
@@ -901,7 +799,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             var Menu = Parcel.subClass({
                 init: function() {
                     this.after('click', function() {
-                        this.identifier.should.be.eql(1);
+                        expect(this.identifier).to.eql(1);
                         count++;
                     }, 'button');
                 },
@@ -934,8 +832,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -943,10 +840,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(1);
+                expect(count).to.eql(1);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('preventing event', function (done) {
@@ -993,8 +892,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -1002,10 +900,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(1);
+                expect(count).to.eql(1);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('preventing event on parcel', function (done) {
@@ -1052,8 +952,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     ];
                 }
             });
-            var webApp = new WebApp();
-            vdom.rootApp(webApp, parcelnode);
+            var webApp = vdom.rootApp(WebApp, parcelnode);
             var menu = webApp._pNode.children[0];
 
             ul = menu.children[0];
@@ -1061,10 +960,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(1);
+                expect(count).to.eql(1);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('preventing event', function (done) {
@@ -1119,10 +1020,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(1);
+                expect(count).to.eql(1);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('preventing event on parcel', function (done) {
@@ -1177,10 +1080,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(1);
+                expect(count).to.eql(1);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('event on childnode with id on pnode', function (done) {
@@ -1188,11 +1093,11 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             var Menu = Parcel.subClass({
                 init: function() {
                     this.after('click', function() {
-                        count.should.be.eql(1);
+                        expect(count).to.eql(1);
                         count += 2;
                     }, '#liId');
                     this.after('click', function() {
-                        count.should.be.eql(0);
+                        expect(count).to.eql(0);
                         count += 1;
                     }, 'button');
                 },
@@ -1235,10 +1140,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
             EMIT_CLICK_EVENT(ul.node); // should have no subscriber
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(3);
+                expect(count).to.eql(3);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('event on childnode with id on vnode', function (done) {
@@ -1246,7 +1153,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             var Menu = Parcel.subClass({
                 init: function() {
                     this.after('click', function() {
-                        count.should.be.eql(0);
+                        expect(count).to.eql(0);
                         count++;
                     }, '#buttonId');
                 },
@@ -1289,10 +1196,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonNode.id = 'buttonId';
             EMIT_CLICK_EVENT(buttonNode);
             EMIT_CLICK_EVENT(ul.node); // should have no subscriber
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(1);
+                expect(count).to.eql(1);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('stopPropagation', function (done) {
@@ -1307,28 +1216,28 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     },
                     'ul');
                     this.before('click', function(e) {
-                        count.should.be.eql(1);
+                        expect(count).to.eql(1);
                         count += 2;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(3);
+                        expect(count).to.eql(3);
                         e.stopPropagation();
                         count += 4;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(7);
+                        expect(count).to.eql(7);
                         count += 8;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(0);
+                        expect(count).to.eql(0);
                         count += 1;
                     },
                     'button');
                     this.after('click', function() {
-                        count.should.be.eql(15);
+                        expect(count).to.eql(15);
                         count+=16;
                     },
                     'button');
@@ -1370,10 +1279,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(31);
+                expect(count).to.eql(31);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('stopPropagation on parcel', function (done) {
@@ -1381,37 +1292,37 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             var Menu = Parcel.subClass({
                 init: function() {
                     this.before('click', function(e) {
-                        count.should.be.eql(3);
+                        expect(count).to.eql(3);
                         count += 4;
                     },
                     'ul');
                     this.before('click', function(e) {
-                        count.should.be.eql(1);
+                        expect(count).to.eql(1);
                         count += 2;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(7);
+                        expect(count).to.eql(7);
                         e.stopPropagation();
                         count += 8;
                     });
                     this.before('click', function(e) {
-                        count.should.be.eql(0);
+                        expect(count).to.eql(0);
                         count += 1;
                     },
                     'button');
                     this.before('click', function(e) {
-                        count.should.be.eql(15);
+                        expect(count).to.eql(15);
                         count += 16;
                     });
 
                     this.after('click', function() {
-                        count.should.be.eql(15);
+                        expect(count).to.eql(15);
                         count+=32;
                     },
                     'button');
                     this.after('click', function(e) {
-                        count.should.be.eql(47);
+                        expect(count).to.eql(47);
                         count+=64;
                     });
                 },
@@ -1452,10 +1363,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(47);
+                expect(count).to.eql(47);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('stopImmediatePropagation', function (done) {
@@ -1472,12 +1385,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     },
                     'ul');
                     this.before('click', function(e) {
-                        count.should.be.eql(1);
+                        expect(count).to.eql(1);
                         count += 2;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(3);
+                        expect(count).to.eql(3);
                         e.stopImmediatePropagation();
                         count += 4;
                     },
@@ -1487,12 +1400,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(0);
+                        expect(count).to.eql(0);
                         count += 1;
                     },
                     'button');
                     this.after('click', function() {
-                        count.should.be.eql(7);
+                        expect(count).to.eql(7);
                         count+=8;
                     },
                     'button');
@@ -1534,10 +1447,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(15);
+                expect(count).to.eql(15);
                 done();
-            }, 0);
+            }, 50);
         });
 
         it('stopImmediatePropagation on parcel', function (done) {
@@ -1545,22 +1460,22 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             var Menu = Parcel.subClass({
                 init: function() {
                     this.before('click', function(e) {
-                        count.should.be.eql(3);
+                        expect(count).to.eql(3);
                         count += 4;
                     },
                     'ul');
                     this.before('click', function(e) {
-                        count.should.be.eql(1);
+                        expect(count).to.eql(1);
                         count += 2;
                     },
                     'li');
                     this.before('click', function(e) {
-                        count.should.be.eql(7);
+                        expect(count).to.eql(7);
                         e.stopImmediatePropagation();
                         count += 8;
                     });
                     this.before('click', function(e) {
-                        count.should.be.eql(0);
+                        expect(count).to.eql(0);
                         count += 1;
                     },
                     'button');
@@ -1569,7 +1484,7 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
                     });
 
                     this.after('click', function() {
-                        count.should.be.eql(15);
+                        expect(count).to.eql(15);
                         count+=16;
                     },
                     'button');
@@ -1614,10 +1529,12 @@ var getPNodeOrVnodeInfo = function(parcel, domnode) {
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
+            // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
+            // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                count.should.be.eql(15);
+                expect(count).to.eql(15);
                 done();
-            }, 0);
+            }, 50);
         });
 
     });

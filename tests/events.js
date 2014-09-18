@@ -15,12 +15,21 @@
 
         EMIT_CLICK_EVENT, EMIT_FOCUS_EVENT, EMIT_KEY_EVENT, buttonnode, divnode, parcelnode;
 
-    ParcelEvents.mergeInto(Parcel);
+        require('lang-ext');
+
+console.info('The after-method from ParcelEvent:');
+console.info(ParcelEvents.after);
+
+Parcel.mergePrototypes(ParcelEvents, true);
+var parcel = new Parcel();
+
+console.info('The ParcelEvent\'s after-method at an Parcel-instance:');
+console.info(parcel.after);
+/*
 
     // ITSA.render = vdom.render;
     // ITSA.rootApp = vdom.rootApp;
     Parcel.vNode = vdom.vNode;
-
     EMIT_CLICK_EVENT = function(target) {
         if (!window) {
             return;
@@ -107,6 +116,7 @@
             var ul, firstli, buttonVnode, buttonNode;
             var Menu = Parcel.subClass({
                 init: function() {
+                    console.info(this.after.toString());
                     this.after('red:save', function() {
                         done();
                     });
@@ -1538,6 +1548,6 @@
         });
 
     });
-
+*/
 
 }(global.window || require('fake-dom')));

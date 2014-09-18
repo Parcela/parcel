@@ -20,7 +20,7 @@
 console.info('The after-method from ParcelEvent:');
 console.info(ParcelEvents.after);
 
-Parcel.mergePrototypes(ParcelEvents);
+Parcel.mergePrototypes(ParcelEvents, true);
 var parcel = new Parcel();
 
 console.info('The ParcelEvent\'s after-method at an Parcel-instance:');

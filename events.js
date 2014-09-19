@@ -1,5 +1,3 @@
-/* globals document:true */
-
 "use strict";
 
 /**
@@ -35,6 +33,7 @@ module.exports = function (window) {
     require('event/event-emitter.js');
 
     var Event = require('event-dom')(window),
+		Parcel = require('./parcel.js'),
         DOCUMENT = window.document,
         _parcelSelToFunc;
 
@@ -134,192 +133,204 @@ module.exports = function (window) {
     // selector into a filter-function:
     Event.after(PARCELA_EMITTER+':selectorsubs', _parcelSelToFunc, Event, true);
 
-    return {
-        /**
-         * Defines an emitterName into the instance.
-         * This will add a protected property `_emitterName` to the instance. If you need an emitterName on
-         * the Class, you should use the Event.Emitter helper: `ClassName.mergePrototypes(Event.Emitter(emitterName));`
-         *
-         * @static
-         * @method defineEmitter
-         * @param emitterName {String} identifier that will be added when events are sent (`emitterName:eventName`)
-         * @since 0.0.1
-        */
-        defineEmitter: function(emitterName) {
-             // force assign: there might be an emittername on the Class
-            this.merge(Event.Emitter(emitterName), true);
-        },
+    var ParcelEv =  Parcel.subClass({
 
-        /**
-         * Subscribes to a customEvent on behalf of the object who calls this method.
-         * The callback will be executed `after` the defaultFn.
-         *
-         * @method after
-         * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
-         *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
-         *        If `emitterName` is not defined, `UI` is assumed.
-         * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
-         *        as its only argument.
-         * @param [filter] {String|Function} to filter the event.
-         *        Use a String if you want to filter DOM-events by a `selector`
-         *        Use a function if you want to filter by any other means. If the function returns a trully value, the
-         *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
-         *        the subscriber.
-         * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
-         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
-         * @since 0.0.1
-        */
-        after: function (customEvent, callback, filter, prepend) {
-           return Event.after(customEvent, callback, this, filter, prepend);
-        },
+		/**
+		 * Defines an emitterName into the instance.
+		 * This will add a protected property `_emitterName` to the instance. If you need an emitterName on
+		 * the Class, you should use the Event.Emitter helper: `ClassName.mergePrototypes(Event.Emitter(emitterName));`
+		 *
+		 * @static
+		 * @method defineEmitter
+		 * @param emitterName {String} identifier that will be added when events are sent (`emitterName:eventName`)
+		 * @since 0.0.1
+		*/
+		defineEmitter: function(emitterName) {
+			 // force assign: there might be an emittername on the Class
+			this.merge(Event.Emitter(emitterName), true);
+		},
 
-        /**
-         * Subscribes to a customEvent on behalf of the object who calls this method.
-         * The callback will be executed `before` the defaultFn.
-         *
-         * @method before
-         * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
-         *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
-         *        If `emitterName` is not defined, `UI` is assumed.
-         * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
-         *        as its only argument.
-         * @param [filter] {String|Function} to filter the event.
-         *        Use a String if you want to filter DOM-events by a `selector`
-         *        Use a function if you want to filter by any other means. If the function returns a trully value, the
-         *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
-         *        the subscriber.
-         * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of before-subscribers.
-         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
-         * @since 0.0.1
-        */
-        before: function (customEvent, callback, filter, prepend) {
-            return Event.before(customEvent, callback, this, filter, prepend);
-        },
+		/**
+		 * Subscribes to a customEvent on behalf of the object who calls this method.
+		 * The callback will be executed `after` the defaultFn.
+		 *
+		 * @method after
+		 * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+		 *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+		 *        If `emitterName` is not defined, `UI` is assumed.
+		 * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+		 *        as its only argument.
+		 * @param [filter] {String|Function} to filter the event.
+		 *        Use a String if you want to filter DOM-events by a `selector`
+		 *        Use a function if you want to filter by any other means. If the function returns a trully value, the
+		 *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
+		 *        the subscriber.
+		 * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
+		 * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+		 * @since 0.0.1
+		*/
+		after: function (customEvent, callback, filter, prepend) {
+			return Event.after(customEvent, callback, this, filter, prepend);
+		},
 
-        /**
-         * Detaches (unsubscribes) the listener from the specified customEvent,
-         * on behalf of the object who calls this method.
-         *
-         * @method detach
-         * @param customEvent {String} conform the syntax: `emitterName:eventName`, wildcard `*` may be used for both
-         *        `emitterName` as well as only `eventName`, in which case 'UI' will become the emitterName.
-         * @since 0.0.1
-        */
-        detach: function(customEvent) {
-            Event.detach(this, customEvent);
-        },
+		/**
+		 * Subscribes to a customEvent on behalf of the object who calls this method.
+		 * The callback will be executed `before` the defaultFn.
+		 *
+		 * @method before
+		 * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+		 *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+		 *        If `emitterName` is not defined, `UI` is assumed.
+		 * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+		 *        as its only argument.
+		 * @param [filter] {String|Function} to filter the event.
+		 *        Use a String if you want to filter DOM-events by a `selector`
+		 *        Use a function if you want to filter by any other means. If the function returns a trully value, the
+		 *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
+		 *        the subscriber.
+		 * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of before-subscribers.
+		 * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+		 * @since 0.0.1
+		*/
+		before: function (customEvent, callback, filter, prepend) {
+			return Event.before(customEvent, callback, this, filter, prepend);
+		},
 
-        /**
-         * Detaches (unsubscribes) the listener from all customevents,
-         * on behalf of the object who calls this method.
-         *
-         * @method detachAll
-         * @since 0.0.1
-        */
-        detachAll: function() {
-            Event.detachAll(this);
-        },
+		/**
+		 * Detaches (unsubscribes) the listener from the specified customEvent,
+		 * on behalf of the object who calls this method.
+		 *
+		 * @method detach
+		 * @param customEvent {String} conform the syntax: `emitterName:eventName`, wildcard `*` may be used for both
+		 *        `emitterName` as well as only `eventName`, in which case 'UI' will become the emitterName.
+		 * @since 0.0.1
+		*/
+		detach: function(customEvent) {
+			Event.detach(this, customEvent);
+		},
 
-        /**
-         * Alias for `after`.
-         *
-         * Subscribes to a customEvent on behalf of the object who calls this method.
-         * The callback will be executed `after` the defaultFn.
-         *
-         * @method on
-         * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
-         *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
-         *        If `emitterName` is not defined, `UI` is assumed.
-         * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
-         *        as its only argument.
-         * @param [filter] {String|Function} to filter the event.
-         *        Use a String if you want to filter DOM-events by a `selector`
-         *        Use a function if you want to filter by any other means. If the function returns a trully value, the
-         *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
-         *        the subscriber.
-         * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
-         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
-         * @since 0.0.1
-        */
-        on: function (/* customEvent, callback, filter, prepend */) {
-            return this.after.apply(this, arguments);
-        },
+		/**
+		 * Detaches (unsubscribes) the listener from all customevents,
+		 * on behalf of the object who calls this method.
+		 *
+		 * @method detachAll
+		 * @since 0.0.1
+		*/
+		detachAll: function() {
+			Event.detachAll(this);
+		},
 
-        /**
-         * Alias for `onceAfter`.
-         *
-         * Subscribes to a customEvent on behalf of the object who calls this method.
-         * The callback will be executed `after` the defaultFn.
-         * The subscriber will be automaticly removed once the callback executed the first time.
-         * No need to `detach()` (unless you want to undescribe before the first event)
-         *
-         * @method onceAfter
-         * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
-         *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
-         *        If `emitterName` is not defined, `UI` is assumed.
-         * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
-         *        as its only argument.
-         * @param [filter] {String|Function} to filter the event.
-         *        Use a String if you want to filter DOM-events by a `selector`
-         *        Use a function if you want to filter by any other means. If the function returns a trully value, the
-         *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
-         *        the subscriber.
-         * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
-         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
-         * @since 0.0.1
-        */
-        once: function (/* customEvent, callback, filter, prepend */) {
-            return this.onceAfter.apply(this, arguments);
-        },
+		/**
+		 * Alias for `after`.
+		 *
+		 * Subscribes to a customEvent on behalf of the object who calls this method.
+		 * The callback will be executed `after` the defaultFn.
+		 *
+		 * @method on
+		 * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+		 *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+		 *        If `emitterName` is not defined, `UI` is assumed.
+		 * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+		 *        as its only argument.
+		 * @param [filter] {String|Function} to filter the event.
+		 *        Use a String if you want to filter DOM-events by a `selector`
+		 *        Use a function if you want to filter by any other means. If the function returns a trully value, the
+		 *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
+		 *        the subscriber.
+		 * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
+		 * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+		 * @since 0.0.1
+		*/
+		on: function (/* customEvent, callback, filter, prepend */) {
+			return this.after.apply(this, arguments);
+		},
 
-        /**
-         * Subscribes to a customEvent on behalf of the object who calls this method.
-         * The callback will be executed `after` the defaultFn.
-         * The subscriber will be automaticly removed once the callback executed the first time.
-         * No need to `detach()` (unless you want to undescribe before the first event)
-         *
-         * @method onceAfter
-         * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
-         *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
-         *        If `emitterName` is not defined, `UI` is assumed.
-         * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
-         *        as its only argument.
-         * @param [filter] {String|Function} to filter the event.
-         *        Use a String if you want to filter DOM-events by a `selector`
-         *        Use a function if you want to filter by any other means. If the function returns a trully value, the
-         *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
-         *        the subscriber.
-         * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
-         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
-         * @since 0.0.1
-        */
-        onceAfter: function (customEvent, callback, filter, prepend) {
-            return Event.onceAfter(customEvent, callback, this, filter, prepend);
-        },
+		/**
+		 * Alias for `onceAfter`.
+		 *
+		 * Subscribes to a customEvent on behalf of the object who calls this method.
+		 * The callback will be executed `after` the defaultFn.
+		 * The subscriber will be automaticly removed once the callback executed the first time.
+		 * No need to `detach()` (unless you want to undescribe before the first event)
+		 *
+		 * @method onceAfter
+		 * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+		 *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+		 *        If `emitterName` is not defined, `UI` is assumed.
+		 * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+		 *        as its only argument.
+		 * @param [filter] {String|Function} to filter the event.
+		 *        Use a String if you want to filter DOM-events by a `selector`
+		 *        Use a function if you want to filter by any other means. If the function returns a trully value, the
+		 *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
+		 *        the subscriber.
+		 * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
+		 * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+		 * @since 0.0.1
+		*/
+		once: function (/* customEvent, callback, filter, prepend */) {
+			return this.onceAfter.apply(this, arguments);
+		},
 
-        /**
-         * Subscribes to a customEvent on behalf of the object who calls this method.
-         * The callback will be executed `before` the defaultFn.
-         * The subscriber will be automaticly removed once the callback executed the first time.
-         * No need to `detach()` (unless you want to undescribe before the first event)
-         *
-         * @method onceBefore
-         * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
-         *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
-         *        If `emitterName` is not defined, `UI` is assumed.
-         * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
-         *        as its only argument.
-         * @param [filter] {String|Function} to filter the event.
-         *        Use a String if you want to filter DOM-events by a `selector`
-         *        Use a function if you want to filter by any other means. If the function returns a trully value, the
-         *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
-         *        the subscriber.
-         * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of before-subscribers.
-         * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
-         * @since 0.0.1
-        */
-        onceBefore: function (customEvent, callback, filter, prepend) {
-            return Event.onceBefore(customEvent, callback, this, filter, prepend);
-        }
-    };
+		/**
+		 * Subscribes to a customEvent on behalf of the object who calls this method.
+		 * The callback will be executed `after` the defaultFn.
+		 * The subscriber will be automaticly removed once the callback executed the first time.
+		 * No need to `detach()` (unless you want to undescribe before the first event)
+		 *
+		 * @method onceAfter
+		 * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+		 *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+		 *        If `emitterName` is not defined, `UI` is assumed.
+		 * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+		 *        as its only argument.
+		 * @param [filter] {String|Function} to filter the event.
+		 *        Use a String if you want to filter DOM-events by a `selector`
+		 *        Use a function if you want to filter by any other means. If the function returns a trully value, the
+		 *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
+		 *        the subscriber.
+		 * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of after-subscribers.
+		 * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+		 * @since 0.0.1
+		*/
+		onceAfter: function (customEvent, callback, filter, prepend) {
+			return Event.onceAfter(customEvent, callback, this, filter, prepend);
+		},
+
+		/**
+		 * Subscribes to a customEvent on behalf of the object who calls this method.
+		 * The callback will be executed `before` the defaultFn.
+		 * The subscriber will be automaticly removed once the callback executed the first time.
+		 * No need to `detach()` (unless you want to undescribe before the first event)
+		 *
+		 * @method onceBefore
+		 * @param customEvent {String|Array} the custom-event (or Array of events) to subscribe to. CustomEvents should
+		 *        have the syntax: `emitterName:eventName`. Wildcard `*` may be used for both `emitterName` as well as `eventName`.
+		 *        If `emitterName` is not defined, `UI` is assumed.
+		 * @param callback {Function} subscriber:will be invoked when the event occurs. An `eventobject` will be passed
+		 *        as its only argument.
+		 * @param [filter] {String|Function} to filter the event.
+		 *        Use a String if you want to filter DOM-events by a `selector`
+		 *        Use a function if you want to filter by any other means. If the function returns a trully value, the
+		 *        subscriber gets invoked. The function gets the `eventobject` as its only argument and the context is
+		 *        the subscriber.
+		 * @param [prepend=false] {Boolean} whether the subscriber should be the first in the list of before-subscribers.
+		 * @return {Object} handler with a `detach()`-method which can be used to detach the subscriber
+		 * @since 0.0.1
+		*/
+		onceBefore: function (customEvent, callback, filter, prepend) {
+			return Event.onceBefore(customEvent, callback, this, filter, prepend);
+		},
+		/**
+		Override Parcel's own `destroy` method to ensure destroying all the attached methods.
+		
+		@method destroy
+		*/
+		destroy: function () {
+			ParcelEv.$super.destroy.call(this);
+			this.detachAll();
+		}
+	});
+	return ParcelEv;
+		
 };

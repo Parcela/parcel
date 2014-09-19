@@ -1,4 +1,4 @@
-/*global describe, it */
+/*global describe, it , beforeEach, afterEach, before, after*/
 
 (function (window) {
 
@@ -7,29 +7,18 @@
         should = require('chai').should(),
 
         Event = require('event-dom')(window),
-        Parcel = require('../parcel'),
+        ParcelEv = require('../events.js')(window),
         vdom = require('virtual-dom')(window),
-        ParcelEvents = require('../events.js')(window),
+		
+		v = vdom.vNode,
 
 		document = window.document,
 
         EMIT_CLICK_EVENT, EMIT_FOCUS_EVENT, EMIT_KEY_EVENT, buttonnode, divnode, parcelnode;
 
-        require('lang-ext');
-
-console.info('The after-method from ParcelEvent:');
-console.info(ParcelEvents.after);
-
-Parcel.mergePrototypes(ParcelEvents, true);
-var parcel = new Parcel();
-
-console.info('The ParcelEvent\'s after-method at an Parcel-instance:');
-console.info(parcel.after);
-/*
-
     // ITSA.render = vdom.render;
     // ITSA.rootApp = vdom.rootApp;
-    Parcel.vNode = vdom.vNode;
+
     EMIT_CLICK_EVENT = function(target) {
         if (!window) {
             return;
@@ -114,9 +103,8 @@ console.info(parcel.after);
 
         it('event-subscription', function (done) {
             var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
-                    console.info(this.after.toString());
                     this.after('red:save', function() {
                         done();
                     });
@@ -128,7 +116,7 @@ console.info(parcel.after);
 
         it('right context', function (done) {
             var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('red:save', this.afterclick);
                 },
@@ -141,7 +129,7 @@ console.info(parcel.after);
         });
 
         it('set instance emitter', function () {
-            var Menu = Parcel.subClass();
+            var Menu = ParcelEv.subClass();
             var parcel = new Menu({value: 10});
             parcel.defineEmitter('parcel1');
             Event.after('parcel1:save', function(e) {
@@ -153,7 +141,7 @@ console.info(parcel.after);
         it('set instance emitter multiple Parcels', function () {
             var Menu, count, parcel1, parcel2;
             count = 0;
-            Menu = Parcel.subClass();
+            Menu = ParcelEv.subClass();
             parcel1 = new Menu({value: 10});
             parcel2 = new Menu({value: 20});
             parcel1.defineEmitter('parcel1');
@@ -172,7 +160,7 @@ console.info(parcel.after);
         });
 
         it('set Class-emitter', function () {
-            var Menu = Parcel.subClass();
+            var Menu = ParcelEv.subClass();
             var parcel = new Menu({value: 10});
             Menu.mergePrototypes(Event.Emitter('parcel1'));
             Event.after('parcel1:save', function(e) {
@@ -184,7 +172,7 @@ console.info(parcel.after);
         it('set Class-emitter multiple Parcels', function () {
             var Menu, count, parcel1, parcel2;
             count = 0;
-            Menu = Parcel.subClass();
+            Menu = ParcelEv.subClass();
             parcel1 = new Menu({value: 10});
             parcel2 = new Menu({value: 20});
             Menu.mergePrototypes(Event.Emitter('parcel1'));
@@ -200,7 +188,7 @@ console.info(parcel.after);
         it('set Class-emitter multiple Parcels and overrule on instance', function () {
             var Menu, count, parcel1, parcel2;
             count = 0;
-            Menu = Parcel.subClass();
+            Menu = ParcelEv.subClass();
             parcel1 = new Menu({value: 10});
             parcel2 = new Menu({value: 20});
             Menu.mergePrototypes(Event.Emitter('parcel1'));
@@ -254,7 +242,7 @@ console.info(parcel.after);
 
         it('event-subscription', function (done) {
             var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', function() {
                         done();
@@ -262,7 +250,6 @@ console.info(parcel.after);
                     'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
@@ -284,14 +271,13 @@ console.info(parcel.after);
 
         it('event-subscription on parcel', function (done) {
             var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', function() {
                         done();
                     });
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
@@ -313,7 +299,7 @@ console.info(parcel.after);
 
         it('right context when subscribed on parcel', function (done) {
             var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', this.afterclick);
                 },
@@ -321,7 +307,6 @@ console.info(parcel.after);
                     done();
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
@@ -343,7 +328,7 @@ console.info(parcel.after);
 
         it('right context', function (done) {
             var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', this.afterclick, 'button');
                 },
@@ -351,13 +336,19 @@ console.info(parcel.after);
                     done();
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            ul = menu._pNode.children[0];
+            var menu = vdom.rootApp(Menu, parcelnode, {
+                items:[
+                    {label: 'Home'},
+                    {label: 'Users'},
+                    {label: 'Groups'}
+                ]
+            });
+			ul = menu._pNode.children[0];
             firstli = ul.children[0];
             buttonVnode = firstli.children[0];
             buttonNode = buttonVnode.node;
@@ -366,7 +357,7 @@ console.info(parcel.after);
 
         it('preventing event', function (done) {
             var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         e.preventDefault();
@@ -378,7 +369,6 @@ console.info(parcel.after);
                     'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
@@ -403,7 +393,7 @@ console.info(parcel.after);
 
         it('halt event', function (done) {
             var ul, firstli, buttonVnode, buttonNode;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         e.halt();
@@ -415,7 +405,6 @@ console.info(parcel.after);
                     'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
@@ -440,7 +429,7 @@ console.info(parcel.after);
 
         it('stopPropagation', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count=0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         done(new Error('event on parcel should not happen'));
@@ -477,7 +466,6 @@ console.info(parcel.after);
                     'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
@@ -499,7 +487,7 @@ console.info(parcel.after);
 
         it('stopImmediatePropagation', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count=0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         done(new Error('event on parcel should not happen'));
@@ -537,7 +525,6 @@ console.info(parcel.after);
                     'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
@@ -592,7 +579,7 @@ console.info(parcel.after);
 
         it('event-subscription', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', function() {
                         count++;
@@ -600,14 +587,13 @@ console.info(parcel.after);
                     'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
 
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -645,20 +631,19 @@ console.info(parcel.after);
 
         it('event-subscription on parcel', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', function() {
                         count++;
                     });
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -696,7 +681,7 @@ console.info(parcel.after);
 
         it('event-subscription on parcel and parcelnode', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', function() {
                         expect(count).to.eql(1);
@@ -708,13 +693,12 @@ console.info(parcel.after);
                     }, 'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -752,7 +736,7 @@ console.info(parcel.after);
 
         it('right context when subscribed on parcel', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', function() {
                         expect(this.identifier).to.eql(1);
@@ -760,13 +744,12 @@ console.info(parcel.after);
                     });
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -806,7 +789,7 @@ console.info(parcel.after);
 
         it('right context', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', function() {
                         expect(this.identifier).to.eql(1);
@@ -814,13 +797,12 @@ console.info(parcel.after);
                     }, 'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -860,7 +842,7 @@ console.info(parcel.after);
 
         it('preventing event', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         count++;
@@ -874,13 +856,12 @@ console.info(parcel.after);
                     }, 'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -920,7 +901,7 @@ console.info(parcel.after);
 
         it('preventing event on parcel', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         count++;
@@ -934,13 +915,12 @@ console.info(parcel.after);
                     }, 'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -980,7 +960,7 @@ console.info(parcel.after);
 
         it('preventing event', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         count++;
@@ -994,13 +974,12 @@ console.info(parcel.after);
                     }, 'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -1040,7 +1019,7 @@ console.info(parcel.after);
 
         it('preventing event on parcel', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         count++;
@@ -1054,13 +1033,12 @@ console.info(parcel.after);
                     }, 'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -1100,7 +1078,7 @@ console.info(parcel.after);
 
         it('event on childnode with id on pnode', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', function() {
                         expect(count).to.eql(1);
@@ -1112,13 +1090,12 @@ console.info(parcel.after);
                     }, 'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -1160,7 +1137,7 @@ console.info(parcel.after);
 
         it('event on childnode with id on vnode', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count = 0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.after('click', function() {
                         expect(count).to.eql(0);
@@ -1168,13 +1145,12 @@ console.info(parcel.after);
                     }, '#buttonId');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -1216,7 +1192,7 @@ console.info(parcel.after);
 
         it('stopPropagation', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count=0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         done(new Error('event on parcel should not happen'));
@@ -1253,13 +1229,12 @@ console.info(parcel.after);
                     'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -1299,7 +1274,7 @@ console.info(parcel.after);
 
         it('stopPropagation on parcel', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count=0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         expect(count).to.eql(3);
@@ -1337,13 +1312,12 @@ console.info(parcel.after);
                     });
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -1383,7 +1357,7 @@ console.info(parcel.after);
 
         it('stopImmediatePropagation', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count=0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         done(new Error('event on parcel should not happen'));
@@ -1421,13 +1395,12 @@ console.info(parcel.after);
                     'button');
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -1467,7 +1440,7 @@ console.info(parcel.after);
 
         it('stopImmediatePropagation on parcel', function (done) {
             var ul, firstli, buttonVnode, buttonNode, count=0;
-            var Menu = Parcel.subClass({
+            var Menu = ParcelEv.subClass({
                 init: function() {
                     this.before('click', function(e) {
                         expect(count).to.eql(3);
@@ -1503,13 +1476,12 @@ console.info(parcel.after);
                     });
                 },
                 view: function() {
-                    var v = Parcel.vNode;
                     return v('ul',this.items.map(function(item) {
                         return v('li', [v('button', item.label)]);
                     }));
                 }
             });
-            var WebApp = Parcel.subClass({
+            var WebApp = ParcelEv.subClass({
                 view: function () {
                     return [
                         new Menu({
@@ -1548,6 +1520,6 @@ console.info(parcel.after);
         });
 
     });
-*/
+
 
 }(global.window || require('fake-dom')));

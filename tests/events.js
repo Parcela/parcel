@@ -9,7 +9,7 @@
         Event = require('event-dom')(window),
         ParcelEv = require('../events.js')(window),
         vdom = require('virtual-dom')(window),
-		
+
 		v = vdom.vNode,
 
 		document = window.document,
@@ -354,6 +354,199 @@
             buttonNode = buttonVnode.node;
             EMIT_CLICK_EVENT(buttonNode);
         });
+
+
+
+
+
+
+
+
+        it('e.target when subscribed on parcel', function (done) {
+            var ul, firstli, buttonVnode, buttonNode;
+            var Menu = ParcelEv.subClass({
+                init: function() {
+                    this.after('click', this.afterclick);
+                },
+                afterclick: function(e) {
+                    expect(e.target).to.eql(this._pNode.node);
+                    done();
+                },
+                view: function() {
+                    return v('ul',this.items.map(function(item) {
+                        return v('li', [v('button', item.label)]);
+                    }));
+                }
+            });
+            var menu = vdom.rootApp(Menu, parcelnode, {
+                items:[
+                    {label: 'Home'},
+                    {label: 'Users'},
+                    {label: 'Groups'}
+                ]
+            });
+            ul = menu._pNode.children[0];
+            firstli = ul.children[0];
+            buttonVnode = firstli.children[0];
+            buttonNode = buttonVnode.node;
+            EMIT_CLICK_EVENT(buttonNode);
+        });
+
+        it('e.target', function (done) {
+            var ul, firstli, buttonVnode, buttonNode;
+            var Menu = ParcelEv.subClass({
+                init: function() {
+                    this.after('click', this.afterclick, 'li');
+                },
+                afterclick: function(e) {
+                    expect(e.target).to.eql(firstli.node);
+                    done();
+                },
+                view: function() {
+                    return v('ul',this.items.map(function(item) {
+                        return v('li', [v('button', item.label)]);
+                    }));
+                }
+            });
+            var menu = vdom.rootApp(Menu, parcelnode, {
+                items:[
+                    {label: 'Home'},
+                    {label: 'Users'},
+                    {label: 'Groups'}
+                ]
+            });
+            ul = menu._pNode.children[0];
+            firstli = ul.children[0];
+            buttonVnode = firstli.children[0];
+            buttonNode = buttonVnode.node;
+            EMIT_CLICK_EVENT(buttonNode);
+        });
+
+        it('e.currentTarget subscribed on parcel', function (done) {
+            var ul, firstli, buttonVnode, buttonNode;
+            var Menu = ParcelEv.subClass({
+                init: function() {
+                    this.after('click', this.afterclick);
+                },
+                afterclick: function(e) {
+                    expect(e.currentTarget).to.eql(this._pNode.node);
+                    done();
+                },
+                view: function() {
+                    return v('ul',this.items.map(function(item) {
+                        return v('li', [v('button', item.label)]);
+                    }));
+                }
+            });
+            var menu = vdom.rootApp(Menu, parcelnode, {
+                items:[
+                    {label: 'Home'},
+                    {label: 'Users'},
+                    {label: 'Groups'}
+                ]
+            });
+            ul = menu._pNode.children[0];
+            firstli = ul.children[0];
+            buttonVnode = firstli.children[0];
+            buttonNode = buttonVnode.node;
+            EMIT_CLICK_EVENT(buttonNode);
+        });
+
+        it('e.currentTarget', function (done) {
+            var ul, firstli, buttonVnode, buttonNode;
+            var Menu = ParcelEv.subClass({
+                init: function() {
+                    this.after('click', this.afterclick, 'li');
+                },
+                afterclick: function(e) {
+                    expect(e.currentTarget).to.eql(this._pNode.node);
+                    done();
+                },
+                view: function() {
+                    return v('ul',this.items.map(function(item) {
+                        return v('li', [v('button', item.label)]);
+                    }));
+                }
+            });
+            var menu = vdom.rootApp(Menu, parcelnode, {
+                items:[
+                    {label: 'Home'},
+                    {label: 'Users'},
+                    {label: 'Groups'}
+                ]
+            });
+            ul = menu._pNode.children[0];
+            firstli = ul.children[0];
+            buttonVnode = firstli.children[0];
+            buttonNode = buttonVnode.node;
+            EMIT_CLICK_EVENT(buttonNode);
+        });
+
+        it('e.sourceTarget when subscribed on parcel', function (done) {
+            var ul, firstli, buttonVnode, buttonNode;
+            var Menu = ParcelEv.subClass({
+                init: function() {
+                    this.after('click', this.afterclick);
+                },
+                afterclick: function(e) {
+                    expect(e.sourceTarget).to.eql(buttonNode);
+                    done();
+                },
+                view: function() {
+                    return v('ul',this.items.map(function(item) {
+                        return v('li', [v('button', item.label)]);
+                    }));
+                }
+            });
+            var menu = vdom.rootApp(Menu, parcelnode, {
+                items:[
+                    {label: 'Home'},
+                    {label: 'Users'},
+                    {label: 'Groups'}
+                ]
+            });
+            ul = menu._pNode.children[0];
+            firstli = ul.children[0];
+            buttonVnode = firstli.children[0];
+            buttonNode = buttonVnode.node;
+            EMIT_CLICK_EVENT(buttonNode);
+        });
+
+        it('e.sourceTarget', function (done) {
+            var ul, firstli, buttonVnode, buttonNode;
+            var Menu = ParcelEv.subClass({
+                init: function() {
+                    this.after('click', this.afterclick, 'li');
+                },
+                afterclick: function(e) {
+                    expect(e.sourceTarget).to.eql(buttonNode);
+                    done();
+                },
+                view: function() {
+                    return v('ul',this.items.map(function(item) {
+                        return v('li', [v('button', item.label)]);
+                    }));
+                }
+            });
+            var menu = vdom.rootApp(Menu, parcelnode, {
+                items:[
+                    {label: 'Home'},
+                    {label: 'Users'},
+                    {label: 'Groups'}
+                ]
+            });
+            ul = menu._pNode.children[0];
+            firstli = ul.children[0];
+            buttonVnode = firstli.children[0];
+            buttonNode = buttonVnode.node;
+            EMIT_CLICK_EVENT(buttonNode);
+        });
+
+
+
+
+
+
 
         it('preventing event', function (done) {
             var ul, firstli, buttonVnode, buttonNode;
@@ -1302,12 +1495,12 @@
                     });
 
                     this.after('click', function() {
-                        expect(count).to.eql(15);
+                        expect(count).to.eql(31);
                         count+=32;
                     },
                     'button');
                     this.after('click', function(e) {
-                        expect(count).to.eql(47);
+                        expect(count).to.eql(63);
                         count+=64;
                     });
                 },
@@ -1350,7 +1543,7 @@
             // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
             // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                expect(count).to.eql(47);
+                expect(count).to.eql(127);
                 done();
             }, 50);
         });
@@ -1514,7 +1707,7 @@
             // CAUTIOUS: do not set timeout to 0 --> IE9 puts the after-dom-events
             // a bit later in the js-stack: timeOut of 0 would happen before the after-evens
             setTimeout(function() {
-                expect(count).to.eql(15);
+                expect(count).to.eql(31);
                 done();
             }, 50);
         });

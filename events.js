@@ -43,22 +43,20 @@ module.exports = function (window) {
      * On "non-outside" events, subscriber.t is set to the node that first matches the selector
      * so it can be used to set as e.target in the final subscriber
      *
-     * @method _parcelSelToFunc
-     * @param ev {Object} eventobject
-     * @param ev.subscriber {Object} subscriber
-     * @param ev.subscriber.o {Object} context
-     * @param ev.subscriber.cb {Function} callbackFn
-     * @param ev.subscriber.f {Function|String} filter
-     * @param ev.subscriber.n {dom-node} becomes e.currentTarget
-     * @param ev.subscriber.t {dom-node} becomes e.target
-     * @param ev.customEvent {String}
+     * @param customEvent {String} the customEvent that is transported to the eventsystem
+     * @param subscriber {Object} subscriber
+     * @param subscriber.o {Object} context
+     * @param subscriber.cb {Function} callbackFn
+     * @param subscriber.f {Function|String} filter
+     * @param subscriber.n {dom-node} becomes e.currentTarget
+     * @param subscriber.t {dom-node} becomes e.target
      * @private
      * @since 0.0.1
      */
-    _parcelSelToFunc = function(ev) {
+    _parcelSelToFunc = function(customEvent, subscriber) {
         // this stage is runned during subscription
-        var selector = ev.subscriber.f,
-            parcelinstance = ev.subscriber.o,
+        var selector = subscriber.f,
+            parcelinstance = subscriber.o,
             nodeid, byExactId, outsideEvent;
 
         if ((typeof parcelinstance.stamp!=='function') || (typeof parcelinstance.view!=='function')) {
@@ -70,26 +68,27 @@ module.exports = function (window) {
         // in case of no selector: we still need to process: parcelinstance._pNode becomes the currentTarget
         // to match against. Thus only leave when selector is a function
         if (typeof selector === 'function') {
-            ev.subscriber.n || (ev.subscriber.n=DOCUMENT);
+            subscriber.n || (subscriber.n=DOCUMENT);
             return;
         }
 
-        outsideEvent = REGEXP_UI_OUTSIDE.test(ev.customEvent);
+        outsideEvent = REGEXP_UI_OUTSIDE.test(customEvent);
 
         if (selector) {
             nodeid = selector.match(REGEXP_EXTRACT_NODE_ID);
-            // do need to set ev.subscriber.n, otherwise filtering goes wrong
-            nodeid ? (ev.subscriber.nId=nodeid[1]) : (ev.subscriber.n=DOCUMENT);
-
+            nodeid && (subscriber.nId=nodeid[1]);
             byExactId = REGEXP_NODE_ID.test(selector);
 
-            ev.subscriber.f = function(e) {
+            subscriber.f = function(e) {
                 // this stage is runned when the event happens
                 console.log(NAME, '_parcelSelToFunc inside filter');
                 var node = e.target,
                     pNode_node = parcelinstance._pNode && parcelinstance._pNode.node,
                     match = false,
                     pvNodeInfo;
+
+                // do need to set subscriber.n, otherwise filtering goes wrong
+                nodeid || (subscriber.n=pNode_node);
 
                 // e.target is the most deeply node in the dom-tree that caught the event
                 // our listener uses `selector` which might be a node higher up the tree.
@@ -100,7 +99,7 @@ module.exports = function (window) {
                 while (pNode_node.contains(node) && !match) {
                     console.log(NAME, '_parcelSelToFunc inside filter check match');
                     if (byExactId) {
-                        match = (node.id===selector.substr(1)) && ((node===pNode_node) || pNode_node.contains(node));
+                        match = (node.id===selector.substr(1)) && pNode_node.contains(node);
                     }
                     else {
                         match = node.matchesSelector(selector);
@@ -108,7 +107,7 @@ module.exports = function (window) {
                     // if there is a match, then set
                     // e.target to the target that matches the selector
                     if (match && !outsideEvent) {
-                        ev.subscriber.t = node;
+                        subscriber.t = node;
                     }
                     node = node.parentNode;
                 }
@@ -117,21 +116,27 @@ module.exports = function (window) {
             };
         }
         else {
-            ev.subscriber.f = function(e) {
+            subscriber.f = function(e) {
                 // this stage is runned when the event happens
                 console.log(NAME, '_parcelSelToFunc inside filter');
                 var node = e.target,
                     pNode_node = parcelinstance._pNode && parcelinstance._pNode.node,
+                    match = pNode_node.contains(node);
 
-                match = ((node===pNode_node) || pNode_node.contains(node));
+                subscriber.n = pNode_node;
+                if (match && !outsideEvent) {
+                    subscriber.t = pNode_node;
+                }
                 return !outsideEvent ? match : !match;
             };
         }
+        return true;
     };
+
     // whenever a subscriber gets defined with a css-selector instead of a filterfunction,
     // the event: 'ParcelaEvent:selectorsubs' get emitted. We need to catch this event and transform its
     // selector into a filter-function:
-    Event.after(PARCELA_EMITTER+':selectorsubs', _parcelSelToFunc, Event, true);
+    Event._sellist.unshift(_parcelSelToFunc);
 
     var ParcelEv =  Parcel.subClass({
 
@@ -323,7 +328,7 @@ module.exports = function (window) {
 		},
 		/**
 		Override Parcel's own `destroy` method to ensure destroying all the attached methods.
-		
+
 		@method destroy
 		*/
 		destroy: function () {
@@ -332,5 +337,5 @@ module.exports = function (window) {
 		}
 	});
 	return ParcelEv;
-		
+
 };

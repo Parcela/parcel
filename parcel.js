@@ -1,4 +1,6 @@
 "use strict";
+
+var noop = function () {};
 /**
 @module core
 @submodule parcel
@@ -34,7 +36,7 @@ var Parcel = Object.createClass(function (config) {
 	Set up event listeners, initialize variables and models and prepare for operation.
 	@method init
 	*/
-	init: function (config) {},
+	init: noop,
 
 
 	/**
@@ -46,14 +48,14 @@ var Parcel = Object.createClass(function (config) {
 
 	@method destroy
 	*/
-	destroy: function () {
+	destroy:  function () {
 		this.each(function (member) {
-			if (member instanceof Parcel) member.destroy.call(member);
+			if (member instanceof Parcel) member.destroy();
 			if (typeof member == 'object' && member.length) {
 				member.some(function (item) {
 					if (item) {
 						if (item instanceof Parcel) {
-							item.destroy.call(item);
+							item.destroy();
 						} else {
 							// If the first non-emtpy item is not a Parcel instance, 
 							// it doesn't bother checking the rest.
@@ -63,7 +65,7 @@ var Parcel = Object.createClass(function (config) {
 				});
 			}
 						
-		}, this);
+		});
 	},
 
 	/**
@@ -75,7 +77,7 @@ var Parcel = Object.createClass(function (config) {
 	
 	@method preView
 	*/
-	preView: function () {},
+	preView: noop,
 	
 	/**
 	Called by the renderer after this Parcel is hidden.
@@ -87,7 +89,7 @@ var Parcel = Object.createClass(function (config) {
 	
 	@method postView
 	*/
-	postView: function () {},
+	postView: noop,
 
 
 	/**
@@ -175,7 +177,16 @@ var Parcel = Object.createClass(function (config) {
 	@type String
 	@default ''
 	*/
-	className:''
+	className:'',
+	/**
+	Hash map of attributes for the container element
+	
+	@property attributes
+	@type Object
+	@default:null
+	*/
+	attributes:null
+	
 });
 
 module.exports = Parcel;

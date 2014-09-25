@@ -4,17 +4,18 @@ var expect = require('chai').expect,
 	should = require('chai').should();
 require('lang-ext');
 (function (window) {
-	var v = require('virtual-dom')(window),
-		Parcel = require("../parcel");
+	var vDOM = require('virtual-dom')(window),
+		Parcel = require("../parcel"),
+		v = vDOM.vNode;
 
 	var P1 = Parcel.subClass({
 		init: function (config) {
 			this.counter = config.start || 0;
 		},
 		view: function () {
-			return v.vNode('div.parcel',[
-				v.vNode('p',this.counter),
-				v.vNode('br')
+			return v('div.parcel',[
+				v('p',this.counter),
+				v('br')
 			]);
 		}
 
@@ -124,8 +125,8 @@ require('lang-ext');
 						done();
 					}
 				});
-				v.rootApp(P1);
-				v.rootApp(Parcel);
+				vDOM.rootApp(P1);
+				vDOM.rootApp(Parcel);
 			});
 			it('should be chained', function (done) {
 				var P2 = Parcel.subClass({
@@ -138,8 +139,8 @@ require('lang-ext');
 						this.p2 = new P2();
 					}
 				});
-				v.rootApp(P1);
-				v.rootApp(Parcel);
+				vDOM.rootApp(P1);
+				vDOM.rootApp(Parcel);
 			});
 			it('should handle arrays of sub-parcels', function () {
 				var count = 0;
@@ -157,8 +158,8 @@ require('lang-ext');
 						}
 					}
 				});
-				v.rootApp(P1);
-				v.rootApp(Parcel);
+				vDOM.rootApp(P1);
+				vDOM.rootApp(Parcel);
 				expect(count).eql(5);
 					
 			});
@@ -175,8 +176,8 @@ require('lang-ext');
 						this.p2 = new P2();
 					}
 				});
-				v.rootApp(P1);
-				v.rootApp(Parcel);
+				vDOM.rootApp(P1);
+				vDOM.rootApp(Parcel);
 			});
 		});
 						
